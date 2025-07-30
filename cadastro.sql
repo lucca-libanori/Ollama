@@ -1,0 +1,10 @@
+CREATE DATABASE IF NOT EXISTS cadastro;
+USE cadastro;
+
+CREATE TABLE IF NOT EXISTS usuario (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL
+);
+
+SELECT * FROM cadastro.usuario;

@@ -1,0 +1,73 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>principal</title>
+    <link rel="stylesheet" href="static/login.css">
+    <script src="https://kit.fontawesome.com/dccc436d33.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <div class="login-card">
+        <a class="seta" href="http://localhost:80/LoginCadastro/index.html"><i class="fa-solid fa-arrow-left"></i></a>
+        <h4>Busque uma equipe</h4>
+        <div class="login-info">
+            <input type="text" placeholder="Equipe" id="pergunta" required>
+        </div>
+        <button onclick="sendQuestion()" class="botao">BUSCAR</button>
+        <pre id="resposta"></pre>
+    </div>
+
+    <script>
+
+        async function sendQuestion() {
+            const pergunta = document.getElementById('pergunta').value.trim();
+            const respostaEl = document.getElementById('resposta');
+
+            if (pergunta === '') {
+                respostaEl.innerText = 'Por favor, insira o nome de uma equipe.';
+                return;
+            }
+
+            respostaEl.innerText = 'Buscando...';
+
+            try {
+                const response = await fetch('http://localhost:5000/api/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: pergunta })
+                });
+
+                if (!response.ok) {
+                    respostaEl.innerText = 'Erro ao consultar o servidor.';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.response) {
+                    respostaEl.innerText = data.response;
+                }
+
+                else {
+                    respostaEl.innerText = `
+Nome: ${data.name || 'Não encontrado'}
+País: ${data.country || 'Não encontrado'}
+Fundação: ${data.foundation || 'Não encontrado'}
+Estádio: ${data.stadium || 'Não encontrado'}
+Títulos: ${(data.titles && data.titles.length > 0) ? data.titles.join(", ") : 'Sem dados'}
+                    `;
+                }
+
+            } catch (error) {
+                respostaEl.innerText = 'Erro na conexão: ' + error.message;
+            }
+        }
+    </script>
+</body>
+
+</html>
